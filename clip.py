@@ -4,6 +4,7 @@ import urllib
 import warnings
 from typing import Union, List
 
+import numpy as np
 import torch
 from PIL import Image
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
@@ -19,6 +20,8 @@ _MODELS = {
     "ViT-B/32": "https://openaipublic.azureedge.net/clip/models/40d365715913c9da98579312b702a82c18be219cc2a73407c4526f58eba950af/ViT-B-32.pt",
 }
 
+NORM_MEAN = np.array([0.48145466, 0.4578275 , 0.40821073])
+NORM_STD  = np.array([0.26862954, 0.26130258, 0.27577711])
 
 def _download(url: str, root: str = os.path.expanduser("~/.cache/clip")):
     os.makedirs(root, exist_ok=True)
@@ -111,7 +114,7 @@ def load(name: str, device: Union[str, torch.device] = "cuda" if torch.cuda.is_a
         CenterCrop(n_px),
         lambda image: image.convert("RGB"),
         ToTensor(),
-        Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
+        # Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
     ])
 
     return model, transform
